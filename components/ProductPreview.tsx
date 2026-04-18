@@ -1,4 +1,4 @@
-import { TrendingUp, Brain, Camera, QrCode, Calendar, Leaf, Lightbulb, ShoppingCart, CheckCircle, Utensils } from "lucide-react";
+import { TrendingUp, Brain, Camera, QrCode, Calendar, Leaf, Lightbulb, ShoppingCart, Utensils } from "lucide-react";
 
 // ── Mini glucose SVG chart ────────────────────────────────────────────────────
 // Points derived from mock data: Mon=118 Tue=125 Wed=112 Thu=135 Fri=122 Sat=108 Sun=130
@@ -32,16 +32,16 @@ function GlucoseMiniChart() {
         strokeLinejoin="round"
       />
       {/* Data dots */}
-      <circle cx="15"  cy="32" r="2.5" fill="#16a34a" stroke="white" strokeWidth="1.5" />
-      <circle cx="63"  cy="26" r="2.5" fill="#16a34a" stroke="white" strokeWidth="1.5" />
+      <circle cx="15" cy="32" r="2.5" fill="#16a34a" stroke="white" strokeWidth="1.5" />
+      <circle cx="63" cy="26" r="2.5" fill="#16a34a" stroke="white" strokeWidth="1.5" />
       <circle cx="110" cy="37" r="2.5" fill="#16a34a" stroke="white" strokeWidth="1.5" />
-      <circle cx="158" cy="18" r="3"   fill="#ef4444" stroke="white" strokeWidth="1.5" />
+      <circle cx="158" cy="18" r="3" fill="#ef4444" stroke="white" strokeWidth="1.5" />
       <circle cx="205" cy="28" r="2.5" fill="#16a34a" stroke="white" strokeWidth="1.5" />
       <circle cx="253" cy="40" r="2.5" fill="#16a34a" stroke="white" strokeWidth="1.5" />
       <circle cx="285" cy="22" r="2.5" fill="#16a34a" stroke="white" strokeWidth="1.5" />
       {/* Day labels */}
-      <text x="15"  y="64" textAnchor="middle" fontSize="7" fill="#94a3b8">Mon</text>
-      <text x="63"  y="64" textAnchor="middle" fontSize="7" fill="#94a3b8">Tue</text>
+      <text x="15" y="64" textAnchor="middle" fontSize="7" fill="#94a3b8">Mon</text>
+      <text x="63" y="64" textAnchor="middle" fontSize="7" fill="#94a3b8">Tue</text>
       <text x="110" y="64" textAnchor="middle" fontSize="7" fill="#94a3b8">Wed</text>
       <text x="158" y="64" textAnchor="middle" fontSize="7" fill="#94a3b8">Thu</text>
       <text x="205" y="64" textAnchor="middle" fontSize="7" fill="#94a3b8">Fri</text>
@@ -70,12 +70,11 @@ function DashboardCard() {
     { label: "Meals Logged", value: "14", unit: "this week", color: "text-blue-700" },
     { label: "Vegan Streak", value: "100%", unit: "on track", color: "text-emerald-700" },
   ];
+
   return (
-    <div className="rounded-2xl bg-white shadow-md border border-slate-200 overflow-hidden flex flex-col">
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-md overflow-hidden flex flex-col">
       <ChromeBar title="Dashboard" color="bg-slate-100 border-slate-200" />
       <div className="p-4 space-y-3 bg-slate-50 flex-1">
-
-        {/* KPI row */}
         <div className="grid grid-cols-3 gap-2">
           {kpis.map((k) => (
             <div key={k.label} className="bg-white rounded-lg p-2 border border-slate-100 shadow-sm text-center">
@@ -86,7 +85,6 @@ function DashboardCard() {
           ))}
         </div>
 
-        {/* Glucose chart */}
         <div className="bg-white rounded-xl p-3 border border-slate-100 shadow-sm">
           <div className="flex items-center gap-1.5 mb-1">
             <TrendingUp className="h-3 w-3 text-green-600 flex-shrink-0" />
@@ -96,18 +94,16 @@ function DashboardCard() {
           <GlucoseMiniChart />
         </div>
 
-        {/* AI Insight */}
         <div className="bg-purple-50 rounded-xl p-3 border border-purple-100">
           <div className="flex items-center gap-1.5 mb-1">
             <Brain className="h-3 w-3 text-purple-600 flex-shrink-0" />
             <span className="text-[10px] font-bold text-purple-800">AI Insight of the Day</span>
           </div>
           <p className="text-[10px] text-purple-700 leading-relaxed italic">
-            "Your glucose tends to rise after refined grain meals. Try quinoa or legumes as a substitute."
+            &quot;Your glucose tends to rise after refined grain meals. Try quinoa or legumes as a substitute.&quot;
           </p>
         </div>
 
-        {/* Quick actions */}
         <div>
           <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Quick Actions</p>
           <div className="grid grid-cols-3 gap-1.5">
@@ -134,12 +130,11 @@ function DashboardCard() {
 // ── Card 2: Meal Analysis ─────────────────────────────────────────────────────
 function MealAnalysisCard() {
   const ingredients = ["tofu", "broccoli", "brown rice", "carrots"];
+
   return (
-    <div className="rounded-2xl bg-white shadow-md border border-slate-200 overflow-hidden flex flex-col">
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-md overflow-hidden flex flex-col">
       <ChromeBar title="Meal Analysis" color="bg-slate-100 border-slate-200" />
       <div className="flex-1 flex flex-col">
-
-        {/* Meal header */}
         <div className="bg-green-600 px-4 py-3">
           <div className="flex items-start justify-between gap-2">
             <p className="text-white font-bold text-sm leading-snug">Tofu Vegetable Grain Bowl</p>
@@ -151,8 +146,6 @@ function MealAnalysisCard() {
         </div>
 
         <div className="p-4 space-y-3 bg-slate-50 flex-1">
-
-          {/* Ingredients */}
           <div>
             <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
               Likely Ingredients
@@ -166,7 +159,6 @@ function MealAnalysisCard() {
             </div>
           </div>
 
-          {/* Glucose note */}
           <div className="bg-blue-50 rounded-xl p-3 border border-blue-100 flex gap-2">
             <TrendingUp className="h-3.5 w-3.5 text-blue-600 flex-shrink-0 mt-0.5" />
             <div>
@@ -177,7 +169,6 @@ function MealAnalysisCard() {
             </div>
           </div>
 
-          {/* AI suggestion */}
           <div className="bg-amber-50 rounded-xl p-3 border border-amber-100 flex gap-2">
             <Lightbulb className="h-3.5 w-3.5 text-amber-600 flex-shrink-0 mt-0.5" />
             <div>
@@ -187,7 +178,6 @@ function MealAnalysisCard() {
               </p>
             </div>
           </div>
-
         </div>
       </div>
     </div>
@@ -197,22 +187,21 @@ function MealAnalysisCard() {
 // ── Card 3: Meal Planner ──────────────────────────────────────────────────────
 function MealPlannerCard() {
   const days = [
-    { day: "Monday",    meals: ["Oatmeal with berries", "Lentil salad", "Tofu stir-fry"],      color: "bg-green-50 border-green-200" },
-    { day: "Tuesday",   meals: ["Chia pudding", "Bean soup", "Quinoa vegetable bowl"],          color: "bg-blue-50 border-blue-200" },
-    { day: "Wednesday", meals: ["Green smoothie", "Chickpea wrap", "Vegetable chili"],         color: "bg-purple-50 border-purple-200" },
+    { day: "Monday", meals: ["Oatmeal with berries", "Lentil salad", "Tofu stir-fry"], color: "bg-green-50 border-green-200" },
+    { day: "Tuesday", meals: ["Chia pudding", "Bean soup", "Quinoa vegetable bowl"], color: "bg-blue-50 border-blue-200" },
+    { day: "Wednesday", meals: ["Green smoothie", "Chickpea wrap", "Vegetable chili"], color: "bg-purple-50 border-purple-200" },
   ];
   const mealLabels = ["Breakfast", "Lunch", "Dinner"];
   const grocery = [
     { cat: "Vegetables", items: "broccoli, spinach, carrots", color: "bg-green-600" },
-    { cat: "Legumes",    items: "lentils, black beans, chickpeas", color: "bg-amber-600" },
-    { cat: "Grains",     items: "oats, quinoa, brown rice", color: "bg-orange-600" },
+    { cat: "Legumes", items: "lentils, black beans, chickpeas", color: "bg-amber-600" },
+    { cat: "Grains", items: "oats, quinoa, brown rice", color: "bg-orange-600" },
   ];
+
   return (
-    <div className="rounded-2xl bg-white shadow-md border border-slate-200 overflow-hidden flex flex-col">
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-md overflow-hidden flex flex-col">
       <ChromeBar title="Meal Planner" color="bg-slate-100 border-slate-200" />
       <div className="p-4 space-y-3 bg-slate-50 flex-1">
-
-        {/* Weekly plan */}
         <div>
           <div className="flex items-center gap-1.5 mb-2">
             <Calendar className="h-3 w-3 text-purple-600 flex-shrink-0" />
@@ -236,7 +225,6 @@ function MealPlannerCard() {
           </div>
         </div>
 
-        {/* Grocery list */}
         <div>
           <div className="flex items-center gap-1.5 mb-2">
             <ShoppingCart className="h-3 w-3 text-green-600 flex-shrink-0" />
@@ -253,7 +241,6 @@ function MealPlannerCard() {
             ))}
           </div>
         </div>
-
       </div>
     </div>
   );
@@ -264,8 +251,6 @@ export default function ProductPreview() {
   return (
     <section className="bg-white px-4 sm:px-6 lg:px-8 py-24">
       <div className="max-w-7xl mx-auto">
-
-        {/* Heading */}
         <div className="text-center mb-14">
           <p className="text-sm font-bold uppercase tracking-widest text-orange-500 mb-3">
             Product Preview
@@ -279,10 +264,7 @@ export default function ProductPreview() {
           </p>
         </div>
 
-        {/* Preview cards grid */}
         <div className="grid md:grid-cols-3 gap-8 items-start">
-
-          {/* Card labels */}
           <div className="space-y-3">
             <div className="text-center mb-4">
               <span className="inline-block bg-green-100 text-green-800 text-xs font-bold px-3 py-1 rounded-full">
@@ -309,7 +291,6 @@ export default function ProductPreview() {
             </div>
             <MealPlannerCard />
           </div>
-
         </div>
       </div>
     </section>

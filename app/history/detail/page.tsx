@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Clock, Salad, Activity, AlertTriangle } from "lucide-react";
 import DashboardCard from "@/components/DashboardCard";
 
@@ -38,18 +38,18 @@ function getRiskStyles(level: RiskLevel) {
 }
 
 export default function HistoryPage() {
-  const [savedMeals, setSavedMeals] = useState<SavedMealInsight[]>([]);
+  const [savedMeals] = useState<SavedMealInsight[]>(() => {
+    if (typeof window === "undefined") return [];
 
-  useEffect(() => {
     try {
       const stored = localStorage.getItem("savedMealInsights");
       const parsed: SavedMealInsight[] = stored ? JSON.parse(stored) : [];
-      setSavedMeals(Array.isArray(parsed) ? parsed : []);
+      return Array.isArray(parsed) ? parsed : [];
     } catch (err) {
       console.error("Failed to load meal history:", err);
-      setSavedMeals([]);
+      return [];
     }
-  }, []);
+  });
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -87,7 +87,7 @@ export default function HistoryPage() {
                 >
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2 mb-2">
+                      <div className="mb-2 flex items-center gap-2">
                         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-green-100 text-green-700">
                           <Salad className="h-4 w-4" />
                         </div>
@@ -101,7 +101,7 @@ export default function HistoryPage() {
                         </div>
                       </div>
 
-                      <p className="text-base font-medium text-slate-900 leading-7">
+                      <p className="text-base font-medium leading-7 text-slate-900">
                         {meal.summary}
                       </p>
 

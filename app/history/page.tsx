@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Clock, Salad, Activity, AlertTriangle } from "lucide-react";
 import DashboardCard from "@/components/DashboardCard";
@@ -40,18 +40,18 @@ function getRiskStyles(level: RiskLevel) {
 
 export default function HistoryPage() {
   const router = useRouter();
-  const [savedMeals, setSavedMeals] = useState<SavedMealInsight[]>([]);
+  const [savedMeals] = useState<SavedMealInsight[]>(() => {
+    if (typeof window === "undefined") return [];
 
-  useEffect(() => {
     try {
       const stored = localStorage.getItem("savedMealInsights");
       const parsed: SavedMealInsight[] = stored ? JSON.parse(stored) : [];
-      setSavedMeals(Array.isArray(parsed) ? parsed : []);
+      return Array.isArray(parsed) ? parsed : [];
     } catch (err) {
       console.error("Failed to load meal history:", err);
-      setSavedMeals([]);
+      return [];
     }
-  }, []);
+  });
 
   const handleOpenMealDetail = (meal: SavedMealInsight) => {
     try {
