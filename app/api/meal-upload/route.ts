@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
       const parsed = JSON.parse(text);
       return NextResponse.json(parsed, { status: 200 });
     } catch {
+      
       return NextResponse.json(
         {
           error: "Webhook returned non-JSON response.",

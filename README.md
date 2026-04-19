@@ -1,10 +1,28 @@
 # PlantRx — AI Coach for Plant-Based Diabetes Management
 
+> Analyze meals, understand glucose impact, and plan plant-based nutrition with AI.
+
 Capstone Project
 
-PlantRx is an AI-powered web application designed to help individuals with Type 2 Diabetes make healthier food decisions using plant-based nutrition guidance and AI-driven meal analysis. The platform analyzes meals, scans packaged foods, and generates personalized vegan meal plans to support blood glucose stability.
 
-The system integrates a modern web interface with an AI-powered backend workflow that analyzes meals and generates diabetes-aware insights.
+## Live Demo
+
+https://vegan-diabetes-ai.vercel.app
+
+## Demo Instructions
+
+1. Click **Continue as Demo**
+2. Go to **Meal Log**
+3. Enter a meal (e.g., *"tofu stir fry with rice"*)
+4. Review glucose impact and AI recommendations
+5. Visit **Dashboard** to see aggregated insights
+
+---
+
+## Demo Access
+
+Authentication is simulated.  
+Click **Continue as Demo** to access all features.
 
 ---
 
@@ -27,28 +45,13 @@ Learn how plant-based nutrition supports diabetes management.
 
 ---
 
-## Technology Stack
-
-### Frontend
-- Next.js (React)
-- TypeScript
-- Tailwind CSS
-- Lucide Icons
-
-### Backend / AI Workflow
-- n8n Automation Platform
-- OpenAI API
-- Webhook API Integration
-
-### Infrastructure
-- Hostinger (n8n workflow hosting)
-- Local development environment (localhost)
-
----
-
 ## System Architecture
 
-User → Next.js Web App → Webhook → n8n Workflow → OpenAI AI Analysis → Structured Meal Insight → Saved Insight → Returned to Frontend Dashboard
+### Current (Deployed Version)
+User → Next.js Web App → API Routes (Mock AI) → Structured Response → UI
+
+### Planned (Full AI Integration)
+User → Next.js Web App → Webhook → n8n Workflow → OpenAI AI Analysis → Structured Meal Insight → Stored Insight → Returned to Frontend Dashboard
 
 ---
 
@@ -107,7 +110,7 @@ User → Next.js Web App → Webhook → n8n Workflow → OpenAI AI Analysis →
 
 ```
 
-## AI Workflow
+## AI Workflow (Planned)
 
 The backend automation pipeline processes meal analysis requests.
 
@@ -123,6 +126,29 @@ Workflow steps:
 8. Calculate glucose spike score
 9. Save AI insight
 10. Return meal analysis to the frontend
+
+---
+
+## Technology Stack
+
+### Frontend
+- Next.js (React)
+- TypeScript
+- Tailwind CSS
+- Lucide Icons
+
+### Backend / AI Workflow (Current)
+- Next.js API Routes (Mock AI responses)
+- Local data simulation (no external dependencies)
+
+### Backend / AI Workflow (Planned)
+- n8n Automation Platform
+- OpenAI API
+- Webhook API Integration
+
+### Infrastructure
+- Hostinger (n8n workflow hosting)
+- Local development environment (localhost)
 
 ---
 
@@ -148,10 +174,28 @@ http://localhost:3000
 
 ---
 
-## Demo Access
+## Testing
 
-For the capstone demo, authentication is simulated.  
-Users can click **Continue as Demo** to access all application features without real account creation.
+- Lint: `npm run lint` (no errors)
+- Build: `npm run build` (passes)
+- Manual QA: All routes load (Dashboard, Meal Log, Barcode, Planner, History, Education)
+
+---
+
+## Environment Variables
+
+None required for the current (mock) deployment.
+
+Planned:
+- OPENAI_API_KEY
+- N8N_WEBHOOK_URL
+
+---
+
+## Documentation
+
+- [PRD](./PRD.md)
+- [Claude Context](./CLAUDE.md)
 
 ---
 
