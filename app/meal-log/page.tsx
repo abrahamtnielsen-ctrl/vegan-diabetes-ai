@@ -4,9 +4,10 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Camera, Upload, Loader2, X, Check, AlertCircle } from "lucide-react";
 import MealAnalysisResult from "@/components/MealAnalysisResult";
-import { MealAnalysisResult as MealResultType } from "@/lib/mockApi";
 
-type MealApiResponse = MealResultType & {
+type Result = React.ComponentProps<typeof MealAnalysisResult>["result"];
+
+type MealApiResponse = Result & {
   ok?: boolean;
   error?: string;
   code?: string;
@@ -20,11 +21,11 @@ export default function MealLogPage() {
   const [description, setDescription] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<MealResultType | null>(null);
+  const [result, setResult] = useState<Result | null>(null);
   const [saved, setSaved] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const analyzeMealLive = async (): Promise<MealResultType> => {
+  const analyzeMealLive = async (): Promise<Result> => {
     const response = await fetch("/api/meal-upload", {
       method: "POST",
       headers: {
@@ -53,7 +54,7 @@ export default function MealLogPage() {
       );
     }
 
-    return data as MealResultType;
+    return data as Result;
   };
 
   const handleDescriptionChange = (
@@ -69,15 +70,14 @@ export default function MealLogPage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    if (!file) return;
 
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setImagePreview(reader.result as string);
-        if (errorMessage) setErrorMessage(null);
-      };
-      reader.readAsDataURL(file);
-    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImagePreview(reader.result as string);
+      if (errorMessage) setErrorMessage(null);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleAnalyze = async () => {
@@ -106,19 +106,25 @@ export default function MealLogPage() {
 
     try {
       const stored = localStorage.getItem("savedMealInsights");
-      const insights = stored ? JSON.parse(stored) : [];
+      const insights: Array<{
+        summary: string;
+        score: number | null;
+        risk: string;
+        savedAt: string;
+      }> = stored ? JSON.parse(stored) : [];
 
       const newInsight = {
         summary: result.meal_summary,
-        score: result.glucose_spike_score,
-        risk: result.diabetes_risk_level,
+        score: result.glucose_spike_score ?? null,
+        risk: result.diabetes_risk_level ?? "unknown",
         savedAt: new Date().toISOString(),
       };
 
       insights.unshift(newInsight);
-
-      const trimmed = insights.slice(0, 20);
-      localStorage.setItem("savedMealInsights", JSON.stringify(trimmed));
+      localStorage.setItem(
+        "savedMealInsights",
+        JSON.stringify(insights.slice(0, 20))
+      );
 
       setSaved(true);
     } catch (err) {
@@ -132,8 +138,7 @@ export default function MealLogPage() {
   };
 
   const canAnalyze =
-    !loading &&
-    (description.trim().length > 0 || imagePreview !== null);
+    !loading && (description.trim().length > 0 || imagePreview !== null);
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -170,6 +175,7 @@ export default function MealLogPage() {
                   className="mx-auto max-h-48 rounded-lg object-cover"
                 />
                 <button
+                  type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleRemoveImage();
@@ -228,6 +234,7 @@ export default function MealLogPage() {
         )}
 
         <button
+          type="button"
           onClick={handleAnalyze}
           disabled={!canAnalyze}
           className="flex w-full items-center justify-center gap-2 rounded-lg bg-green-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-green-700 disabled:bg-slate-100 disabled:text-slate-400"
@@ -252,6 +259,7 @@ export default function MealLogPage() {
 
           <div className="flex flex-col gap-3 sm:flex-row">
             <button
+              type="button"
               onClick={handleSaveInsight}
               disabled={saved}
               className={
@@ -272,6 +280,7 @@ export default function MealLogPage() {
             </button>
 
             <button
+              type="button"
               onClick={() => router.push("/dashboard")}
               className="flex-1 rounded-lg border border-slate-300 bg-white px-4 py-3 font-semibold text-slate-700 transition-colors hover:bg-slate-50"
             >
@@ -280,7 +289,7 @@ export default function MealLogPage() {
           </div>
 
           {saved && (
-            <p className="animate-fade-in text-center text-sm text-emerald-700">
+            <p className="text-center text-sm text-emerald-700">
               Insight saved to your history for this demo.
             </p>
           )}
