@@ -1,212 +1,80 @@
-# PlantRx — AI Coach for Plant-Based Diabetes Management
+# PlantRx — AI Nutrition Coach for Plant-Based Diabetes Management
 
-> Analyze meals, understand glucose impact, and plan plant-based nutrition with AI.
+> Analyze meals, enforce vegan compliance, and estimate glucose impact using a structured AI workflow.
 
-Capstone Project
+Capstone Project — Abraham Nielsen
 
+---
 
-## Live Demo
+## 🌐 Live Demo
 
 https://vegan-diabetes-ai.vercel.app
 
-## Demo Instructions
+---
 
-1. Click **Continue as Demo**
-2. Go to **Meal Log**
-3. Enter a meal (e.g., *"tofu stir fry with rice"*)
-4. Review glucose impact and AI recommendations
-5. Visit **Dashboard** to see aggregated insights
+## 🚀 Overview
+
+PlantRx is a full-stack AI web application designed to support individuals with Type II Diabetes through plant-based nutrition guidance.
+
+The system processes meal inputs in real time and returns structured, explainable insights including:
+- Vegan compliance validation
+- Glucose impact estimation
+- Ingredient identification
+- Actionable dietary recommendations
+
+Unlike a simple AI demo, PlantRx combines **deterministic validation logic** with **AI-driven analysis** to ensure consistent and reliable outputs.
 
 ---
 
-## Demo Access
+## ⚙️ Core Features (Implemented)
 
-Authentication is simulated.  
-Click **Continue as Demo** to access all features.
+### 🧠 AI Meal Analysis
+- Accepts natural language meal descriptions
+- Extracts likely ingredients and meal composition
+- Generates structured nutrition insights
 
----
+### 🛑 Vegan Compliance Engine
+- Rule-based detection of non-vegan ingredients
+- Blocks invalid inputs before AI processing
+- Ensures consistent and explainable system behavior
 
-## Features
+### 📊 Glucose Impact Scoring
+- Estimates glucose spike score (0–100)
+- Identifies added and hidden sugar sources
+- Assigns diabetes risk levels (low / moderate / high)
 
-**AI Meal Analysis**  
-Upload or describe a meal and receive ingredient detection, vegan verification, and glucose impact insights.
+### 🔁 Automated Backend Workflow
+- Fully orchestrated using n8n
+- Handles validation, routing, AI processing, and response formatting
 
-**Barcode Scanner**  
-Scan packaged foods to check vegan status, added sugars, and diabetes-friendly recommendations.
-
-**Weekly AI Meal Planner**  
-Generate personalized plant-based weekly meal plans with grocery lists.
-
-**Meal History Tracking**  
-Store previous meal insights to review glucose-aware nutrition patterns.
-
-**Education Library**  
-Learn how plant-based nutrition supports diabetes management.
-
----
-
-## System Architecture
-
-### Current (Deployed Version)
-User → Next.js Web App → API Routes (Mock AI) → Structured Response → UI
-
-### Planned (Full AI Integration)
-User → Next.js Web App → Webhook → n8n Workflow → OpenAI AI Analysis → Structured Meal Insight → Stored Insight → Returned to Frontend Dashboard
+### 🧪 Automated Test Suite
+- Node.js test runner sending real requests to the live webhook
+- Validates critical system paths:
+  - Vegan meal analysis
+  - Non-vegan blocking
+  - Vague input rejection
+  - Sugar detection behavior
 
 ---
 
-## Architecture Diagram
+## 🧱 System Architecture
 
 ```text
-┌──────────────┐
-│     User     │
-└──────┬───────┘
-       │
-       ▼
-┌──────────────────────────────┐
-│ Next.js Frontend Application │
-│ Landing • Auth • Dashboard   │
-│ Meal Log • Planner • History │
-└───────────┬──────────────────┘
-            │
-            ▼
-┌──────────────────────────────┐
-│ Webhook / API Request Layer  │
-└───────────┬──────────────────┘
-            │
-            ▼
-┌──────────────────────────────┐
-│     n8n Backend Workflow     │
-│ Normalize Input              │
-│ Validate Meal                │
-│ Save Meal Log                │
-│ Analyze Meal with AI         │
-│ Format JSON                  │
-│ Add Risk Flag                │
-│ Add Glucose Spike Score      │
-│ Save AI Insight              │
-│ Return Analysis              │
-└───────────┬──────────────────┘
-            │
-            ▼
-┌──────────────────────────────┐
-│        OpenAI API / AI       │
-│ Meal understanding & insight │
-└───────────┬──────────────────┘
-            │
-            ▼
-┌──────────────────────────────┐
-│ Structured Insight / Storage │
-│ Meal logs • AI insights      │
-│ Saved history                │
-└───────────┬──────────────────┘
-            │
-            ▼
-┌──────────────────────────────┐
-│ User-Facing Results          │
-│ Dashboard • History • Detail │
-│ Planner • Education          │
-└──────────────────────────────┘
-
-```
-
-## AI Workflow (Planned)
-
-The backend automation pipeline processes meal analysis requests.
-
-Workflow steps:
-
-1. Webhook receives meal data
-2. Normalize input data
-3. Validate meal description
-4. Save meal log
-5. Send meal to OpenAI for AI analysis
-6. Format analysis JSON
-7. Add diabetes risk flag
-8. Calculate glucose spike score
-9. Save AI insight
-10. Return meal analysis to the frontend
-
----
-
-## Technology Stack
-
-### Frontend
-- Next.js (React)
-- TypeScript
-- Tailwind CSS
-- Lucide Icons
-
-### Backend / AI Workflow (Current)
-- Next.js API Routes (Mock AI responses)
-- Local data simulation (no external dependencies)
-
-### Backend / AI Workflow (Planned)
-- n8n Automation Platform
-- OpenAI API
-- Webhook API Integration
-
-### Infrastructure
-- Hostinger (n8n workflow hosting)
-- Local development environment (localhost)
-
----
-
-## Running the Project
-
-Install dependencies:
-
-```
-npm install
-```
-
-Run development server:
-
-```
-npm run dev
-```
-
-Open the application:
-
-```
-http://localhost:3000
-```
-
----
-
-## Testing
-
-- Lint: `npm run lint` (no errors)
-- Build: `npm run build` (passes)
-- Manual QA: All routes load (Dashboard, Meal Log, Barcode, Planner, History, Education)
-
----
-
-## Environment Variables
-
-None required for the current (mock) deployment.
-
-Planned:
-- OPENAI_API_KEY
-- N8N_WEBHOOK_URL
-
----
-
-## Documentation
-
-- [PRD](./PRD.md)
-- [Claude Context](./CLAUDE.md)
-
----
-
-## Educational Disclaimer
-
-This project is an educational prototype.  
-The information provided is not medical advice and should not replace professional healthcare guidance.
-
----
-
-## Author
-
-Abraham Nielsen  
-Capstone Project — AI Web Application Development
+User
+  ↓
+Next.js Frontend (Meal Log UI)
+  ↓
+Webhook API (POST request)
+  ↓
+n8n Workflow Engine
+  ├─ Normalize Input
+  ├─ Validate Meal
+  ├─ Vegan Detection (Rule-based)
+  ├─ Conditional Routing
+  ├─ AI Analysis (OpenAI)
+  ├─ Glucose Scoring
+  ├─ Response Formatting
+  ↓
+Structured JSON Response
+  ↓
+Frontend UI Rendering

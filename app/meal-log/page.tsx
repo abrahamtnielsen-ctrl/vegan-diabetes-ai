@@ -2,18 +2,27 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Camera, Upload, Loader2, X, Check } from "lucide-react";
+import { Camera, Upload, Loader2, X, Check, AlertCircle } from "lucide-react";
 import MealAnalysisResult from "@/components/MealAnalysisResult";
 import { MealAnalysisResult as MealResultType } from "@/lib/mockApi";
 
+type MealApiResponse = MealResultType & {
+  ok?: boolean;
+  error?: string;
+  code?: string;
+  input_meal?: string;
+};
+
 export default function MealLogPage() {
   const router = useRouter();
+  const fileRef = useRef<HTMLInputElement>(null);
+
   const [description, setDescription] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<MealResultType | null>(null);
   const [saved, setSaved] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const analyzeMealLive = async (): Promise<MealResultType> => {
     const response = await fetch("/api/meal-upload", {
@@ -29,12 +38,33 @@ export default function MealLogPage() {
       }),
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Failed to analyze meal: ${response.status} ${errorText}`);
+    let data: MealApiResponse | null = null;
+
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error("Meal analysis service returned an invalid response.");
     }
 
-    return response.json();
+    if (!response.ok || data?.ok === false) {
+      throw new Error(
+        data?.error ||
+          "Meal description is too vague to analyze. Please enter a more specific meal."
+      );
+    }
+
+    return data as MealResultType;
+  };
+
+  const handleDescriptionChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    const value = e.target.value;
+    setDescription(value);
+
+    if (errorMessage) setErrorMessage(null);
+    if (result) setResult(null);
+    if (saved) setSaved(false);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,7 +72,10 @@ export default function MealLogPage() {
 
     if (file) {
       const reader = new FileReader();
-      reader.onload = () => setImagePreview(reader.result as string);
+      reader.onload = () => {
+        setImagePreview(reader.result as string);
+        if (errorMessage) setErrorMessage(null);
+      };
       reader.readAsDataURL(file);
     }
   };
@@ -52,12 +85,17 @@ export default function MealLogPage() {
       setLoading(true);
       setResult(null);
       setSaved(false);
+      setErrorMessage(null);
 
       const res = await analyzeMealLive();
       setResult(res);
     } catch (error) {
       console.error("Meal analysis failed:", error);
-      alert(error instanceof Error ? error.message : "Meal analysis failed");
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Meal analysis failed. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -68,7 +106,6 @@ export default function MealLogPage() {
 
     try {
       const stored = localStorage.getItem("savedMealInsights");
-
       const insights = stored ? JSON.parse(stored) : [];
 
       const newInsight = {
@@ -80,9 +117,7 @@ export default function MealLogPage() {
 
       insights.unshift(newInsight);
 
-      // keep only latest 20 meals
       const trimmed = insights.slice(0, 20);
-
       localStorage.setItem("savedMealInsights", JSON.stringify(trimmed));
 
       setSaved(true);
@@ -91,22 +126,29 @@ export default function MealLogPage() {
     }
   };
 
+  const handleRemoveImage = () => {
+    setImagePreview(null);
+    if (fileRef.current) fileRef.current.value = "";
+  };
+
   const canAnalyze =
-    !loading && (description.trim().length > 0 || imagePreview !== null);
+    !loading &&
+    (description.trim().length > 0 || imagePreview !== null);
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="mx-auto max-w-2xl space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Log a Meal</h1>
-        <p className="text-slate-500 mt-1">
+        <p className="mt-1 text-slate-500">
           Upload a photo or describe your meal for AI-powered analysis.
         </p>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-5">
+      <div className="space-y-5 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-2">
-            Meal Photo <span className="text-slate-400 font-normal">(optional)</span>
+          <label className="mb-2 block text-sm font-semibold text-slate-700">
+            Meal Photo{" "}
+            <span className="font-normal text-slate-400">(optional)</span>
           </label>
 
           <div
@@ -114,10 +156,10 @@ export default function MealLogPage() {
               if (!imagePreview) fileRef.current?.click();
             }}
             className={
-              "border-2 border-dashed rounded-xl p-8 text-center transition-colors " +
+              "rounded-xl border-2 border-dashed p-8 text-center transition-colors " +
               (imagePreview
                 ? "border-green-300 bg-green-50"
-                : "border-slate-300 cursor-pointer hover:border-green-400 hover:bg-green-50")
+                : "cursor-pointer border-slate-300 hover:border-green-400 hover:bg-green-50")
             }
           >
             {imagePreview ? (
@@ -125,28 +167,29 @@ export default function MealLogPage() {
                 <img
                   src={imagePreview}
                   alt="Meal preview"
-                  className="max-h-48 mx-auto rounded-lg object-cover"
+                  className="mx-auto max-h-48 rounded-lg object-cover"
                 />
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    setImagePreview(null);
-                    if (fileRef.current) fileRef.current.value = "";
+                    handleRemoveImage();
                   }}
-                  className="absolute -top-2 -right-2 bg-white rounded-full p-1 shadow-md border border-slate-200 hover:bg-red-50"
+                  className="absolute -right-2 -top-2 rounded-full border border-slate-200 bg-white p-1 shadow-md hover:bg-red-50"
                 >
                   <X className="h-4 w-4 text-slate-500" />
                 </button>
               </div>
             ) : (
               <div className="space-y-2">
-                <div className="mx-auto h-12 w-12 bg-slate-100 rounded-full flex items-center justify-center">
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
                   <Camera className="h-6 w-6 text-slate-400" />
                 </div>
-                <p className="text-sm text-slate-500 font-medium">
+                <p className="text-sm font-medium text-slate-500">
                   Click to upload a meal photo
                 </p>
-                <p className="text-xs text-slate-400">PNG, JPG, WebP supported</p>
+                <p className="text-xs text-slate-400">
+                  PNG, JPG, WebP supported
+                </p>
               </div>
             )}
           </div>
@@ -161,22 +204,33 @@ export default function MealLogPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-2">
+          <label className="mb-2 block text-sm font-semibold text-slate-700">
             Meal Description
           </label>
           <textarea
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={handleDescriptionChange}
             placeholder="Describe your meal (e.g., brown rice with tofu and steamed broccoli)..."
             rows={4}
-            className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+            className="w-full resize-none rounded-lg border border-slate-300 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
           />
+          <p className="mt-2 text-xs text-slate-500">
+            Try something specific like “oatmeal with berries and chia seeds” or
+            “pepperoni pizza with soda.”
+          </p>
         </div>
+
+        {errorMessage && (
+          <div className="flex gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0" />
+            <p>{errorMessage}</p>
+          </div>
+        )}
 
         <button
           onClick={handleAnalyze}
           disabled={!canAnalyze}
-          className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 disabled:bg-slate-100 disabled:text-slate-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-green-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-green-700 disabled:bg-slate-100 disabled:text-slate-400"
         >
           {loading ? (
             <>
@@ -196,14 +250,14 @@ export default function MealLogPage() {
         <div className="space-y-4">
           <MealAnalysisResult result={result} />
 
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row">
             <button
               onClick={handleSaveInsight}
               disabled={saved}
               className={
-                "flex-1 rounded-lg py-3 px-4 font-semibold transition-colors flex items-center justify-center gap-2 " +
+                "flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-3 font-semibold transition-colors " +
                 (saved
-                  ? "bg-emerald-100 text-emerald-700 border border-emerald-200 cursor-default"
+                  ? "cursor-default border border-emerald-200 bg-emerald-100 text-emerald-700"
                   : "bg-green-600 text-white hover:bg-green-700")
               }
             >
@@ -219,14 +273,14 @@ export default function MealLogPage() {
 
             <button
               onClick={() => router.push("/dashboard")}
-              className="flex-1 rounded-lg border border-slate-300 bg-white py-3 px-4 font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+              className="flex-1 rounded-lg border border-slate-300 bg-white px-4 py-3 font-semibold text-slate-700 transition-colors hover:bg-slate-50"
             >
               View Dashboard →
             </button>
           </div>
 
           {saved && (
-            <p className="text-sm text-emerald-700 text-center animate-fade-in">
+            <p className="animate-fade-in text-center text-sm text-emerald-700">
               Insight saved to your history for this demo.
             </p>
           )}

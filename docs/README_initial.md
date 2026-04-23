@@ -111,3 +111,13 @@ The information provided is not medical advice and should not replace profession
 
 Abraham Nielsen  
 Capstone Project — AI Web Application Development
+
+## 📜 Project Evolution
+
+This project was developed iteratively:
+
+- `docs/README_initial.md` — early concept and feature planning
+- `docs/README_v1.md` — intermediate architecture and system refinement
+- `README.md` — final implemented system with n8n workflows, AI integration, and automated testing
+
+This progression reflects the transition from a conceptual design to a fully functional, validated application.
